@@ -1,1 +1,9 @@
-site_name: My Docs
+site_name: Scaffa ChIP-seq Project
+site_author: Joselynn Wallace
+theme:
+  name: material
+  feature:
+    tabs: true
+  palette:
+    primary: 'blue-grey'
+    accent: 'indigo'
