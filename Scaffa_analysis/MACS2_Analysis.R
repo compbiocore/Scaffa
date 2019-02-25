@@ -95,6 +95,14 @@ HO1_A_specific_Overlaps_metadata_GRanges_df_qvalue_histo <- ggplot(data=HO1_A_sp
 HO1_B_specific_Overlaps_metadata_GRanges_df_qvalue <- HO1_B_specific_Overlaps_metadata_GRanges_df[,'qValue', drop=FALSE]
 HO1_B_specific_Overlaps_metadata_GRanges_df_qvalue_histo <- ggplot(data=HO1_B_specific_Overlaps_metadata_GRanges_df_qvalue, aes(HO1_B_specific_Overlaps_metadata_GRanges_df_qvalue$qValue)) + geom_histogram(binwidth=5) + xlab('-log10qValue') + geom_vline(xintercept=2, color='red', size=.25)
 
+#pull out the qValue info for the permissive IgG peaks also...
+
+permissive_IgG_metadata <- permissive_ol_IgG$all.peaks$list_gr...A_IgG_A_LH20...
+write.table(permissive_IgG_metadata, 'permissive_IgG_metadata.txt', sep='\t', row.names=F)
+
+permissive_IgG_metadata_uniquePeaks <- permissive_ol_IgG$uniquePeaks
+write.table(permissive_IgG_metadata_uniquePeaks, 'permissive_IgG_metadata_uniquePeaks.txt', sep='\t', row.names=F)
+
 #write the dfs
 write.table(HO1_A_specific_Overlaps_metadata_GRanges_df, 'permissive_HO1_peaks_HO1_specific_A_peaklist_df.txt', sep='\t', row.names=F)
 write.table(HO1_B_specific_Overlaps_metadata_GRanges_df, 'permissive_HO1_peaks_HO1_specific_B_peaklist_df.txt', sep='\t', row.names=F)
@@ -112,9 +120,7 @@ covplot(permissive_HO1_peaks_anno_GRanges)
 ggsave('permissive_HO1_peaks_covplot.png')
 
 
-#Peaks per chromosome
-
-#Peak width per chromosome
+#Peaks per chromosome amd [eak width per chromosome
 
 boxplot <-ggplot(permissive_HO1_peaks_HO1_specific_df, aes(x=seqnames, y=width)) + geom_boxplot() + xlab('chromosome')
 boxplot + theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -124,5 +130,18 @@ p <- ggplot(data=permissive_HO1_peaks_HO1_specific_df, aes(permissive_HO1_peaks_
 p + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ggsave('/Users/jwalla12/Desktop/Scaffa_report/docs/assets/peaks_per_chromosome_HO1_specific.png', height=3, width=4)
 
+#####
 
+#get a list of gene IDs
+gene_list=(as.data.frame(permissive_HO1_peaks_anno)$geneId)
+
+#convert gene IDs to entrez format
+gene_list_formatted <- bitr(gene_list, fromType='ALIAS', toType='ENTREZID', OrgDb="org.Mm.eg.db")
+
+#enrich...
+#pathway1 <- enrichPathway(gene=gene_list_formatted$ENTREZID, organism='mouse')
+pathway1 <- enrichPathway(gene=gene_list_formatted$ENTREZID, organism='mouse', pAdjustMethod='bonferroni')
+dotplot(pathway1)
+
+ggsave('permissive_HO1_peaks_enrichPathway.png')
 
