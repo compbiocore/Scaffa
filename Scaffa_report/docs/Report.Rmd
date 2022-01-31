@@ -1,3 +1,7 @@
+---
+title: "Scaffa_report"
+output: html_document
+---
 
 # Scaffa ChIP-seq Project read and alignment QC
 
